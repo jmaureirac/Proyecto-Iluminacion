@@ -1,15 +1,50 @@
-'use strict'
-
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
+
 var Schema = mongoose.Schema;
 
-var UserSchema = Schema({
-  username: String,
-  email: String,
-  password: String,
-  role: String,
-  created_at: String,
-  updated_at: String 
+var rolesValidos = {
+  values: ['ADMIN_ROLE', 'USER_ROLE'],
+  message: '{VALUE} no es un rol permitido'
+};
+
+var userSchema = Schema({
+  username: {
+    type: String,
+    required: [true, 'El nombre es necesario']
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: [true, 'El email es necesario']
+  },
+  password: {
+    type: String,
+    required: [true, 'La contraseña es necesaria']
+  },
+  role: {
+    type: String,
+    required: true,
+    default: 'USER_ROLE',
+    enum: rolesvalidos
+  },
+  google: {
+    type: Boolean,
+    default: false
+  },
+  created_at: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date,
+    required: false
+  } 
+},{
+  collection: 'users'
 });
 
-module.exports = mongoose.model('User', UserSchema);
+userSchema.plugin( uniqueValidator, { message: '{PATH} debe ser único' } );
+
+module.exports = mongoose.model('User', userSchema);

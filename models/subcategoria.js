@@ -1,12 +1,23 @@
-'use strict'
-
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');   
+
 var Schema = mongoose.Schema;
 
-var PublicationSchema = Schema({
-  text: String,
-  file: String,
-  created_at: String,
-  user: { type: Schema.ObjectId, ref: 'User' }
+var subcategoriaSchema = Schema({
+  nombre: {
+    type: String,
+    unique: true,
+    required: [true, 'El nombre es necesario']
+  },
+  categoria: {
+    type: Schema.Types.ObjectId,
+    ref: 'Categoria',
+    required: true
+  }
+},{
+  collection: 'subcategorias'
 });
-module.exports = mongoose.model('Publication', PublicationSchema);
+
+subcategoriaSchema.plugin( uniqueValidator, { message: '{PATH} debe ser único' } );
+
+module.exports = mongoose.model('Subcategoria', subcategoriaSchema);

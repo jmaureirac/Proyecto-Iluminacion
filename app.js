@@ -30,15 +30,15 @@ var appRoutes = require('./routes/app');
 var userRoutes = require('./routes/user');
 var loginRoutes = require('./routes/login');
 var categoriaRoutes = require('./routes/categoria');
+var subcategoriaRoutes = require('./routes/subcategoria');
 var marcaRoutes = require('./routes/marca');
+var productoRoutes = require('./routes/producto');
+var cotizacionRoutes = require('./routes/cotizacion');
+var stockRoutes = require('./routes/stock');
 
 
 
 // TODO: 
-// var productoRoutes = require('./routes/producto');
-// var stockRoutes = require('./routes/stock');
-// var cotizacionRoutes = require('./routes/cotizacion');
-// var subcategoriaRoutes = require('./routes/subcategoria');
 // var busquedaRoutes = require('./routes/busqueda');
 
 
@@ -76,14 +76,14 @@ mongoose.connection.openUri('mongodb://localhost:27017/proyecto-iluminacion', (e
 app.use('/user', userRoutes);
 app.use('/login', loginRoutes);
 app.use('/categoria', categoriaRoutes);
+app.use('/subcategoria', subcategoriaRoutes);
 app.use('/marca', marcaRoutes);
+app.use('/producto', productoRoutes);
+app.use('/cotizacion', cotizacionRoutes);
 app.use('/', appRoutes);
+app.use('/stock', stockRoutes);
 
 // TODO:
-// app.use('/producto', productoRoutes);
-// app.use('/stock', stockRoutes);
-// app.use('/cotizacion', cotizacionRoutes);
-// app.use('/subcategoria', subcategoriaRoutes);
 // app.use('/busqueda', busquedaRoutes);
 
 

@@ -182,5 +182,93 @@ app.delete('/:id', mdAuth.verificaToken, (req, res) => {
 });
 
 
+
+// *****************************************
+//      Cambiar contraseña de usuario
+// *****************************************
+app.put('/cambiar-password/:id', mdAuth.verificaToken, (req, res) => {
+
+    var id = req.params.id;
+    var body = req.body;
+
+    if( !body.password || !body.newpassword || !body.newpassword2 ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Los campos de contraseñas son obligatorios',
+            errors: {
+                message: 'Los campos de contraseñas son obligatorios'
+            }
+        });
+        
+    }
+
+    if( body.newpassword !== body.newpassword2 ) {
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'Las contraseñas no coinciden2',
+            errors: {
+                message: 'Las contraseñas no coinciden2'
+            }
+        });
+        
+    }
+    
+
+    User.findById(id, (err, userDB) => {
+
+        if( err ) {
+            return res.status(500).json({
+               ok: false,
+               mensaje: 'Error al buscar usuario',
+               errors: err
+           });
+        }
+        if( !userDB ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Usuario inexistente',
+                errors: err
+            });
+        }
+
+
+        if( !bcrypt.compareSync( body.password, userDB.password ) ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Las contraseñas no coinciden',
+                errors: {
+                    message: 'Las contraseñas no coinciden'
+                }
+            });
+        }
+
+        userDB.password = bcrypt.hashSync(body.newpassword, 10);
+        userDB.updated_at = new Date();
+        
+        userDB.save((err, userUpdated) => {
+
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al actualizar contraseña',
+                   errors: err
+               });
+            }
+            
+            userDB.password = "?";
+
+            res.status(200).json({
+                ok: true,
+                user: userUpdated
+            });
+            
+        });
+
+    });
+
+});
+
+
+
 module.exports = app;
 

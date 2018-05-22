@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var stockSchema = Schema({
     producto: {
-        types: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Producto',
         required: true
     },

@@ -39,7 +39,7 @@ var userSchema = Schema({
   },
   updated_at: {
     type: Date,
-    required: false
+    default: Date.now
   } 
 },{
   collection: 'users'

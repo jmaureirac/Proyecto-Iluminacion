@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 
 var Schema = mongoose.Schema;
 
@@ -6,12 +7,12 @@ var stockSchema = Schema({
     producto: {
         type: Schema.Types.ObjectId,
         ref: 'Producto',
-        required: true
+        required: true,
+        unique: true
     },
     cantidad: {
         type: Number,
-        required: true,
-        default: 0
+        required: true
     },
     precio_compra: {
         type: Number,
@@ -28,3 +29,8 @@ var stockSchema = Schema({
     }
 
 });
+
+stockSchema.plugin( uniqueValidator, { message: '{PATH} debe ser único' } );
+
+
+module.exports = mongoose.model('Stock', stockSchema);

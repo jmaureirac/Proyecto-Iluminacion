@@ -1,0 +1,186 @@
+var express = require('express');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
+var mdAuth = require('../middlewares/auth');
+
+
+var app = express();
+
+var User = require('../models/user');
+
+
+// *****************************************
+//      Obtener todos los usuarios
+// *****************************************
+app.get('/', (req, res) => {
+
+    var desde = req.query.desde || 0; // Parametro opcional desde
+    desde = Number(desde);
+
+    User.find({}, 'username email role img google created_at')
+        .skip(desde)
+        .limit(10)
+        .exec((err, usuarios) => {
+
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al cargar usuarios',
+                   errors: err
+               });
+            }
+            
+            User.count({}, (err, cantidad) => {
+
+                if( err ) {
+                    return res.status(400).json({
+                       ok: false,
+                       mensaje: 'Error al contar usuarios',
+                       errors: err
+                   });
+                }
+                
+                res.status(200).json({
+                    ok: true,
+                    usuarios: usuarios,
+                    total: cantidad
+                });
+                
+            });
+
+        });
+
+});
+
+
+// *****************************************
+//      Agregar usuario
+// *****************************************
+app.post('/', (req, res) => {
+
+    var body = req.body;
+
+    var user = new User({
+        name: body.name,
+        email: body.email,
+        password: bcrypt.hashSync(body.password, 10),
+        role: body.role
+    });
+
+    user.save((err, userSaved) => {
+
+        if( err ) {
+            return res.status(400).json({
+               ok: false,
+               mensaje: 'Error al crear usuario',
+               errors: err
+           });
+        }
+        
+        res.status(201).json({
+            ok: true,
+            user: userSaved
+        });
+        
+    });
+
+});
+
+
+// *****************************************
+//      Modificar usuario
+// *****************************************
+app.put('/:id', mdAuth.verificaToken, (req, res) => {
+
+    var id = req.params.id;
+    var body = req.body;
+
+    User.findById(id, (err, user) => {
+
+        if( err ) {
+            return res.status(500).json({
+               ok: false,
+               mensaje: 'Error al buscar usuario',
+               errors: err
+           });
+        }
+        
+        if( !user ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Usuario inexistente',
+                errors: {
+                    message: 'No existe usuario con ese id'
+                }
+            });
+        }
+
+        user.name = body.name;
+        user.email = body.email;
+        user.role = body.role;
+        user.updated_at = new Date();
+
+        user.save((err, userSaved) => {
+
+            if( err ) {
+                return res.status(400).json({
+                   ok: false,
+                   mensaje: 'Error al actualizar',
+                   errors: err
+               });
+            }
+            
+            user.password = '?';
+
+            res.status(200).json({
+                ok: true,
+                user: userSaved
+            });        
+
+        });
+
+    });
+
+});
+
+
+// *****************************************
+//      Eliminar un usuario
+// *****************************************
+app.delete('/:id', mdAuth.verificaToken, (req, res) => {
+
+    var id = req.params.id;
+    
+    User.findByIdAndRemove(id, (err, userDeleted) => {
+
+        if( err ) {
+            return res.status(500).json({
+               ok: false,
+               mensaje: 'Error al eliminar usuario',
+               errors: err
+           });
+        }
+        
+        if( !userDeleted ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Usuario inexistente',
+                errors: {
+                    message : 'No existe un usuario con ese id'
+                }
+            });
+        }
+
+        res.status(200).json({
+            ok: true,
+            user: userDeleted
+        });
+
+    });
+
+});
+
+
+module.exports = app;
+

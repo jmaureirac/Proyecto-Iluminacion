@@ -9,7 +9,7 @@ var rolesValidos = {
 };
 
 var userSchema = Schema({
-  username: {
+  name: {
     type: String,
     required: [true, 'El nombre es necesario']
   },
@@ -26,7 +26,7 @@ var userSchema = Schema({
     type: String,
     required: true,
     default: 'USER_ROLE',
-    enum: rolesvalidos
+    enum: rolesValidos
   },
   google: {
     type: Boolean,

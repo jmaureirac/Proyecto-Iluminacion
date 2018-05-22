@@ -5,59 +5,59 @@ var Schema = mongoose.Schema;
 
 var productoSchema = Schema({
     nombre: {
-        types: String,
+        type: String,
         required: [true, 'El nombre es requerido']
     },
     subcategoria: {
-        types: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Subcategoria',
         unique: true,
         required: [true, 'El producto pertenece a una subcategoria']
     },
     marca: {
-        types: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Marca',
         unique: true,
         required: [true, 'El producto tiene una marca']
     },
     descripción: {
-        types: String,
+        type: String,
         required: false
     },
     material: {
-        types: String,
+        type: String,
         required: false
     },
     precio_unitario: {
-        types: Number,
+        type: Number,
         required: [true, 'El precio es obligatorio']
     },
     temperatura: {
-        types: Number,
+        type: Number,
         required: false
     },
     vida_util: {
-        types: Number,
+        type: Number,
         required: false
     },
     voltaje: {
-        types: Number,
+        type: Number,
         required: false
     },
     potencia: {
-        types: Number,
+        type: Number,
         required: false
     },
     flujo_luminoso: {
-        types: Number,
+        type: Number,
         required: false
     },
     grado_proteccion: {
-        types: Number,
+        type: Number,
         required: false
     },
     img: {
-        types: String,
+        type: String,
         required: false
     },
     medidas: {
@@ -65,7 +65,7 @@ var productoSchema = Schema({
         largo: Number,
         altura: Number,
         required: false
-    },
+    }
 
 },{
     collection: 'productos'

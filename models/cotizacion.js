@@ -8,9 +8,11 @@ var cotizacionSchema = Schema({
     required: [true, 'El usuario es necesario']
   },
   productos: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Producto',
-	    cantidad : Number
+      producto: {
+        type: Schema.Types.ObjectId,
+        ref: 'Producto',
+      },
+	    cantidad: Number
   }],
   created_at: {
     type: Date,

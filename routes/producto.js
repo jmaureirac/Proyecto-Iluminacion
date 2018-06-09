@@ -3,6 +3,7 @@ var express = require('express');
 var app = express();
 
 var mdAuth = require('../middlewares/auth');
+var mdUser = require('../middlewares/user');
 
 var Producto = require('../models/producto');
 
@@ -58,7 +59,7 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Agregar Producto
 // *****************************************
-app.post('/', mdAuth.verificaToken, (req, res) => {
+app.post('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var body = req.body;
 
@@ -114,7 +115,7 @@ app.post('/', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Actualizar producto
 // *****************************************
-app.put('/:id', mdAuth.verificaToken, (req, res) => {
+app.put('/:id', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -192,7 +193,7 @@ app.put('/:id', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Eliminar Producto
 // *****************************************
-app.delete('/:id', mdAuth.verificaToken, (req, res) => {
+app.delete('/:id', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var id = req.params.id;
 

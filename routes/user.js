@@ -1,9 +1,9 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
+// var jwt = require('jsonwebtoken');
 
 var mdAuth = require('../middlewares/auth');
-
+var mdUser = require('../middlewares/user');
 
 var app = express();
 
@@ -11,16 +11,56 @@ var User = require('../models/user');
 
 
 // *****************************************
-//      Obtener todos los usuarios
+//      Obtener usuarios paginados
 // *****************************************
 app.get('/', (req, res) => {
 
     var desde = req.query.desde || 0; // Parametro opcional desde
     desde = Number(desde);
 
-    User.find({}, 'username email role img google created_at')
+    User.find({}, 'name email role google created_at updated_at')
         .skip(desde)
         .limit(10)
+        .exec((err, usuarios) => {
+
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al cargar usuarios',
+                   errors: err
+               });
+            }
+            
+            User.count({}, (err, cantidad) => {
+
+                if( err ) {
+                    return res.status(400).json({
+                       ok: false,
+                       mensaje: 'Error al contar usuarios',
+                       errors: err
+                   });
+                }
+                
+                res.status(200).json({
+                    ok: true,
+                    usuarios: usuarios,
+                    total: cantidad
+                });
+                
+            });
+
+        });
+
+});
+
+
+// *****************************************
+//      Obtener todos los usuarios
+// *****************************************
+app.get('/all', (req, res) => {
+
+
+    User.find({}, 'name email role google created_at updated_at')
         .exec((err, usuarios) => {
 
             if( err ) {
@@ -91,7 +131,7 @@ app.post('/', (req, res) => {
 // *****************************************
 //      Modificar usuario
 // *****************************************
-app.put('/:id', mdAuth.verificaToken, (req, res) => {
+app.put('/:id', [mdAuth.verificaToken, mdUser.verificaAdminMismoUser], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -148,7 +188,7 @@ app.put('/:id', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Eliminar un usuario
 // *****************************************
-app.delete('/:id', mdAuth.verificaToken, (req, res) => {
+app.delete('/:id', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var id = req.params.id;
     
@@ -186,7 +226,7 @@ app.delete('/:id', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Cambiar contraseña de usuario
 // *****************************************
-app.put('/cambiar-password/:id', mdAuth.verificaToken, (req, res) => {
+app.put('/cambiar-password/:id', [mdAuth.verificaToken, mdUser.verificaMismoUser], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;

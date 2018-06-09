@@ -35,12 +35,12 @@ var marcaRoutes = require('./routes/marca');
 var productoRoutes = require('./routes/producto');
 var cotizacionRoutes = require('./routes/cotizacion');
 var stockRoutes = require('./routes/stock');
-
+var uploadRoutes = require('./routes/upload');
+var imagenesRoutes = require('./routes/imagenes');
 
 
 // TODO: 
 // var busquedaRoutes = require('./routes/busqueda');
-
 
 
 // *****************************************
@@ -80,8 +80,10 @@ app.use('/subcategoria', subcategoriaRoutes);
 app.use('/marca', marcaRoutes);
 app.use('/producto', productoRoutes);
 app.use('/cotizacion', cotizacionRoutes);
-app.use('/', appRoutes);
 app.use('/stock', stockRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/imagen', imagenesRoutes);
+app.use('/', appRoutes);
 
 // TODO:
 // app.use('/busqueda', busquedaRoutes);

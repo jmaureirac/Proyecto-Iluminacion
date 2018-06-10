@@ -2,7 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 
 var mdAuth = require('../middlewares/auth');
-
+var mdUser = require('../middlewares/user');
 
 var app = express();
 
@@ -13,7 +13,7 @@ var Cotizacion = require('../models/cotizacion');
 // *****************************************
 //      Obtener todas las cotizaciones
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
@@ -24,7 +24,7 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
         .limit(10)
         .populate('user', 'name email')
         .populate('productos')
-        .populate('productos.producto', 'nombre precio_unitario img')
+        .populate('productos.producto', 'nombre subcategoria precio_unitario img')
         .exec((err, cotizaciones) => {
             
             if( err ) {
@@ -67,6 +67,82 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 });
 
 
+// *****************************************
+//      Obtener una cotización por ID
+// *****************************************
+app.get('/:id', [mdAuth.verificaToken, mdUser.verificaAdminMismoUser], (req, res) => {
+
+    var id = req.params.id;
+
+    Cotizacion.findById(id)
+        .populate('user', 'name email')
+        .populate('productos')
+        .populate('productos.producto', 'nombre subcategoria precio_unitario img')
+        .exec((err, cotizacion) => {
+            if( err ) {
+                return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar cotización',
+                errors: err
+            });
+            }
+            if( !cotizacion ){
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'No se puede encontrar cotización',
+                    errors: {
+                        message: 'No existe cotizacion con ese id'
+                    }
+                });
+            }
+            res.status(200).json({
+                ok: true,
+                cotizacion 
+            });
+            
+    });
+
+});
+
+
+// *****************************************
+//      Obtener las cotizaciones de un user
+// *****************************************
+app.get('/user/:id', [mdAuth.verificaToken, mdUser.verificaAdminMismoUser], (req, res) => {
+
+    var id_user = req.params.id;
+
+    Cotizacion.find({ user: id_user })
+        .sort('-created_at')
+        .populate('user', 'name email')
+        .populate('productos')
+        .populate('productos.producto', 'nombre subcategoria precio_unitario img')
+        .exec((err, cotizaciones) => {
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al cargar las cotizaciones',
+                   errors: err
+               });
+            }
+            if( !cotizaciones ) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'No se encuentran cotizaciones para ese usuario',
+                    errors: {
+                        message: 'El usuario buscado no tiene cotizaciones'
+                    }
+                });                
+            }
+            res.status(200).json({
+                ok: true,
+                cotizaciones
+            });
+                       
+        });
+
+});
+
 
 // *****************************************
 //      Agregar una cotizacion
@@ -74,31 +150,13 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 app.post('/', mdAuth.verificaToken, (req, res) => {
 
     var body = req.body;
-    var productos = body.productos;
-    
-    var todos = productos.split(';');
-    
-    var arrayProductos = [];
-
-    for (let i = 0; i < todos.length; i++) {
-        let json = {};
-        let unproducto = todos[i].split('.');
-        json.producto = mongoose.Types.ObjectId(unproducto[0]);
-        json.cantidad = Number(unproducto[1]);
-        arrayProductos.push(json);
-    }
-    
-    // 5b038e93a8a95b790ae8c282.13;5b038b1d58c2c6769abb9fd0.3;5b038b9f72fa8276daf27e14.5;5b038e2469fd0c7885f78c86.7
-    // Formato de body.productos
-    // id_producto.cantidad;id_producto.cantidad;id_producto.cantidad para poder pasar a array
-
+    var productos = JSON.parse(body.productos);
     
     var cotizacion = new Cotizacion({
         user: body.user,
-        productos: arrayProductos,
+        productos: productos,
         created_at: body.created_at
     });
-    
     
     cotizacion.save((err, cotizacionSaved) => {
         
@@ -119,10 +177,9 @@ app.post('/', mdAuth.verificaToken, (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             ok: true,
-            user: body.user,
-            productos: arrayProductos
+            cotizacion
         });
 
     });

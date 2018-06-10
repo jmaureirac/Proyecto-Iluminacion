@@ -35,7 +35,7 @@ exports.verificaMismoUser = function(req, res, next) {
         return;
     } else {
         res.status(403).json({
-            ok: status,
+            ok: false,
             mensaje: 'Error al realizar la petición',
             errors: {
                 message: 'No tiene permisos para realizar esta acción'
@@ -60,7 +60,7 @@ exports.verificaAdminMismoUser = function(req, res, next) {
         return;
     } else {
         res.status(403).json({
-            ok: status,
+            ok: false,
             mensaje: 'Error al realizar la petición',
             errors: {
                 message: 'No puede realizar esta petición'

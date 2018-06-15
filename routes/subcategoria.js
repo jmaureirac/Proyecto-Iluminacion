@@ -37,6 +37,44 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 
 
 // *****************************************
+//      Obtener una categoria por i
+// *****************************************
+app.get('/:id', mdAuth.verificaToken, (req, res) => {
+
+    var id = req.params.id;
+
+    Subcategoria.findById(id)
+        .populate('categoria')
+        .exec((err, subcategoria) => {
+        
+        if( err ) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al cargar subcategoria',
+                errors: err
+            });
+        }
+        if ( !subcategoria ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Subcategoria inexistente',
+                errors: {
+                    message: 'No existe subcategoria con ese id'
+                }
+            });
+        }
+        
+        res.status(200).json({
+            ok: true,
+            subcategoria: subcategoria
+        });
+        
+        
+    }); 
+});
+
+
+// *****************************************
 //      Agregar una subcategoria
 // *****************************************
 app.post('/', mdAuth.verificaToken, (req, res) => {

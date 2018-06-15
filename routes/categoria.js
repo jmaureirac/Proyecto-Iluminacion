@@ -37,6 +37,42 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 
 
 // *****************************************
+//      Obtener una categoria por id
+// *****************************************
+app.get('/:id', mdAuth.verificaToken, (req, res) => {
+
+    var id = req.params.id;
+
+    Categoria.findById(id, (err, categoria) => {
+            if( err ) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al cargar categoria',
+                    errors: err
+                });
+            }
+            if ( !categoria ) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Categoria inexistente',
+                    errors: {
+                        message: 'No existe categoria con ese id'
+                    }
+                });
+            }
+            
+            res.status(200).json({
+                ok: true,
+                categoria: categoria
+            });
+            
+
+        });
+
+});
+
+
+// *****************************************
 //      Agregar una categoria
 // *****************************************
 app.post('/', mdAuth.verificaToken, (req, res) => {

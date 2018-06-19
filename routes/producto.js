@@ -55,6 +55,50 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 });
 
 
+// *****************************************
+//      Obtener Productos
+// *****************************************
+app.get('/all', mdAuth.verificaToken, (req, res) => {
+
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Producto.find({})
+        .sort({ nombre: 'asc' })
+        .populate('marca')
+        .populate('subcategoria')
+        .exec((err, productos) => {
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al buscar productos',
+                   errors: err
+               });
+            }
+
+            Producto.count({}, (err, cantidad) => {
+
+                if( err ) {
+                    return res.status(500).json({
+                       ok: false,
+                       mensaje: 'Error al contar productos',
+                       errors: err
+                   });
+                }
+                
+
+                res.status(200).json({
+                    ok: true,
+                    productos: productos,
+                    total: cantidad
+                });
+                
+            });
+
+        });
+
+});
+
 
 // *****************************************
 //      Agregar Producto

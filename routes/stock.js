@@ -3,14 +3,15 @@ var express = require('express');
 var app = express();
 
 var mdAuth = require('../middlewares/auth');
+var mdUser = require('../middlewares/user');
 
 var Stock = require('../models/stock');
 
 
 // *****************************************
-//      Ver productos en stock
+//      Ver productos en stock paginados
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
@@ -61,11 +62,61 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 });
 
 
+// *****************************************
+//      Ver todos productos en stock
+// *****************************************
+app.get('/all', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
+
+    Stock.find({})
+        .populate('producto')
+        .populate('marca')
+        .populate('subcategoria')
+        .exec((err, stocks) => {
+
+            if( err ) {
+                return res.status(500).json({
+                   ok: false,
+                   mensaje: 'Error al buscar productos',
+                   errors: err
+               });
+            }
+            if( !stocks ){
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'No hay productos en stock',
+                    errors: {
+                        message: 'No existen productos con Stock en el inventario'
+                    }
+                });
+            }
+            
+            Stock.count((err, cantidad) => {
+
+                if( err ) {
+                    return res.status(500).json({
+                       ok: false,
+                       mensaje: 'Error al contar productos',
+                       errors: err
+                   });
+                }
+                
+                res.status(200).json({
+                    ok: true,
+                    stocks: stocks,
+                    total: cantidad
+                });
+                
+            });
+
+        });
+
+});
+
 
 // *****************************************
 //      Agregar producto en stock
 // *****************************************
-app.post('/', mdAuth.verificaToken, (req, res, next) => {
+app.post('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res, next) => {
 
     var body = req.body;
     
@@ -107,7 +158,7 @@ app.post('/', mdAuth.verificaToken, (req, res, next) => {
 // *****************************************
 //      Modificar producto en stock
 // *****************************************
-app.put('/:id', mdAuth.verificaToken, (req, res) => {
+app.put('/:id', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;

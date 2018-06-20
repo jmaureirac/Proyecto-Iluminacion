@@ -13,7 +13,7 @@ var User = require('../models/user');
 // *****************************************
 //      Obtener usuarios paginados
 // *****************************************
-app.get('/', (req, res) => {
+app.get('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 
     var desde = req.query.desde || 0; // Parametro opcional desde
     desde = Number(desde);
@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
 // *****************************************
 //      Obtener todos los usuarios
 // *****************************************
-app.get('/all', (req, res) => {
+app.get('/all', [mdAuth.verificaToken, mdUser.verificaAdmin] , (req, res) => {
 
 
     User.find({}, 'name email role google created_at updated_at')

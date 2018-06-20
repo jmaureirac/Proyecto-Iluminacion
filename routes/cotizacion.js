@@ -70,7 +70,7 @@ app.get('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
 // *****************************************
 //      Obtener una cotización por ID
 // *****************************************
-app.get('/:id', [mdAuth.verificaToken, mdUser.verificaAdminMismoUser], (req, res) => {
+app.get('/:id', mdAuth.verificaToken, (req, res) => {
 
     var id = req.params.id;
 

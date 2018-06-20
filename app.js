@@ -37,6 +37,7 @@ var cotizacionRoutes = require('./routes/cotizacion');
 var stockRoutes = require('./routes/stock');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
+var mailRoutes = require('./routes/mailer');
 
 
 // TODO: 
@@ -83,6 +84,7 @@ app.use('/cotizacion', cotizacionRoutes);
 app.use('/stock', stockRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/imagen', imagenesRoutes);
+app.use('/mail', mailRoutes);
 app.use('/', appRoutes);
 
 // TODO:

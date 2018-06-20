@@ -150,7 +150,7 @@ app.get('/user/:id', [mdAuth.verificaToken, mdUser.verificaAdminMismoUser], (req
 app.post('/', mdAuth.verificaToken, (req, res) => {
 
     var body = req.body;
-    var productos = JSON.parse(body.productos);
+    var productos = body.productos;
     
     var cotizacion = new Cotizacion({
         user: body.user,

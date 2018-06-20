@@ -6,6 +6,9 @@ var app = express();
 
 var User = require('../models/user');
 
+var menu_user = require('../config/menu').USER_MENU;
+var menu_admin = require('../config/menu').ADMIN_MENU; 
+
 // Cargar constantes token y Google
 const SEED = require('../config/config').SEED;
 const CLIENT_ID = require('../config/config').CLIENT_ID;
@@ -55,10 +58,18 @@ app.post('/', (req, res) => {
         // CREAR TOKEN  
         user.password = '?';
         var token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }); // 4 horas
+
+        var menu;
+        if( user.role === 'ADMIN_ROLE' ) {
+            menu = menu_admin;
+        } else {
+            menu = menu_user;
+        }
         
         res.status(200).json({
             ok: true,
             user: user,
+            menu: menu,
             token: token,
             id: user._id
         });
@@ -126,9 +137,17 @@ app.post('/google', async(req, res) => {
                 } else {
                     var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 });
 
+                    var menu;
+                    if( userDB.role === 'ADMIN_ROLE' ) {
+                        menu = menu_admin;
+                    } else {
+                        menu = menu_user;
+                    }
+
                     res.status(200).json({
                         ok: true,
                         user: userDB,
+                        menu: menu,
                         token: token,
                         id: userDB._id
                     });
@@ -159,6 +178,7 @@ app.post('/google', async(req, res) => {
                     res.status(200).json({
                         ok: true,
                         user: userSaved,
+                        menu: menu_user,
                         token: token,
                         id: userSaved._id
                     });

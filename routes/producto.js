@@ -101,6 +101,41 @@ app.get('/all', mdAuth.verificaToken, (req, res) => {
 
 
 // *****************************************
+//      Obtener producto por ID
+// *****************************************
+app.get('/:id', mdAuth.verificaToken, (req, res) =>{
+
+    var id = req.params.id;
+
+    Producto.findById( id )
+        .populate('marca') 
+        .populate('subcategoria')
+        .exec( (err, producto) => {
+        if( err ) {
+            return res.status(500).json({
+               ok: false,
+               mensaje: 'Error al cargar producto',
+               errors: err
+           });
+        }
+        if( !producto ) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al encontrar producto',
+                errors: {
+                    message: 'No existe producto con ese ID'
+                }
+            });
+        }
+        res.status(200).json({
+            ok: true,
+            producto
+        }); 
+    });
+});
+
+
+// *****************************************
 //      Agregar Producto
 // *****************************************
 app.post('/', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {

@@ -231,11 +231,7 @@ app.put('/:id', [mdAuth.verificaToken, mdUser.verificaAdmin], (req, res) => {
         productoDB.potencia = body.potencia;
         productoDB.flujo_luminoso = body.flujo_luminoso;
         productoDB.grado_proteccion = body.grado_proteccion;
-        productoDB.medidas = {
-            largo: body.largo,
-            altura: body.altura,
-            ancho: body.ancho
-        };
+        productoDB.medidas = body.medidas;
 
         productoDB.save((err, productoSaved) => {
             if( err ) {

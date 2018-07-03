@@ -10,7 +10,7 @@ var Marca = require('../models/marca');
 // *****************************************
 //      Obtener todas las marcas
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', (req, res) => {
 
     Marca.find({})
         .sort({ nombre: 'asc' })

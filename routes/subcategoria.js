@@ -10,7 +10,7 @@ var Subcategoria = require('../models/subcategoria');
 // *****************************************
 //      Obtener todas las subcategorias
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', (req, res) => {
 
     Subcategoria.find({})
         .sort({ nombre: 'asc' })
@@ -37,9 +37,9 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 
 
 // *****************************************
-//      Obtener una categoria por i
+//      Obtener una categoria por id
 // *****************************************
-app.get('/:id', mdAuth.verificaToken, (req, res) => {
+app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 

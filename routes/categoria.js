@@ -11,7 +11,7 @@ var Categoria = require('../models/categoria');
 // *****************************************
 //      Obtener todas las categorias
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', (req, res) => {
 
     Categoria.find({})
         .sort({ nombre: 'asc' })
@@ -39,7 +39,7 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Obtener una categoria por id
 // *****************************************
-app.get('/:id', mdAuth.verificaToken, (req, res) => {
+app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 

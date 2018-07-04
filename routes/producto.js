@@ -11,7 +11,7 @@ var Producto = require('../models/producto');
 // *****************************************
 //      Obtener Productos
 // *****************************************
-app.get('/', mdAuth.verificaToken, (req, res) => {
+app.get('/', (req, res) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
@@ -58,7 +58,7 @@ app.get('/', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Obtener Productos
 // *****************************************
-app.get('/all', mdAuth.verificaToken, (req, res) => {
+app.get('/all', (req, res) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
@@ -103,7 +103,7 @@ app.get('/all', mdAuth.verificaToken, (req, res) => {
 // *****************************************
 //      Obtener producto por ID
 // *****************************************
-app.get('/:id', mdAuth.verificaToken, (req, res) =>{
+app.get('/:id', (req, res) =>{
 
     var id = req.params.id;
 
